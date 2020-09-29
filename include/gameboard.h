@@ -7,8 +7,6 @@
 
 #define PIN_DPAD_UP 6
 #define PIN_DPAD_DOWN 10
-#define PIN_DPAD_LEFT 7
-#define PIN_DPAD_RIGHT 9
 #define PIN_DPAD_MIDDLE 8
 #define PIN_BOOST A0
 #define PIN_TRIGGER 2
@@ -26,15 +24,13 @@ class Gameboard {
         Bounce triggerBtn;
         Bounce dpadUpBtn;
         Bounce dpadDownBtn;
-        Bounce dpadLeftBtn;
-        Bounce dpadRightBtn;
         Bounce dpadMiddleBtn;
         Bounce boostBtn;
         
         Gameboard();
 
-        void triggerDrillSound(unsigned char);
-        void triggerPickSound(unsigned char);
+        void triggerDrillSound(char);
+        void triggerPickSound(char);
         void triggerClickSound();
         void triggerBadSound();
         void triggerMoneySound();

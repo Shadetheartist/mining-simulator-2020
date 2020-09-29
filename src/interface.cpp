@@ -24,6 +24,8 @@ Interface::Interface(Game *game)
 {
   this->game = game;
   display = new Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+  display->setTextWrap(false);
+  display->setTextSize(1);
 }
 
 bool Interface::init()
@@ -94,8 +96,7 @@ void Interface::drawMenuFooter()
       WHITE);
 
   //write text
-  display->setTextWrap(false);
-  display->setTextSize(1);
+
   display->setTextColor(WHITE);
   display->setCursor(UI_FOOTER_X, UI_FOOTER_Y + 2);
 
@@ -113,28 +114,13 @@ void Interface::drawCargoSidebar()
       UI_SIDEBAR_X, UI_SIDEBAR_Y + UI_SIDEBAR_HEIGHT,
       WHITE);
 
-  if (!game->isShowingMenu || game->menuSelectedWindow == 1)
-  {
-    //draw header area
-    display->fillRect(
-        UI_SIDEBAR_X, UI_SIDEBAR_Y,
-        UI_SIDEBAR_WIDTH, 8,
-        WHITE);
-  }
-  else
-  {
-    //draw header area
-    display->drawLine(
-        UI_SIDEBAR_X, UI_SIDEBAR_Y + 8,
-        UI_SIDEBAR_X + UI_SIDEBAR_WIDTH, UI_SIDEBAR_Y + 8,
-        WHITE);
-  }
-
-  //up/down arrows
-  display->drawBitmap(128 - G_UP_DOWN_BMP_WIDTH, 2, G_UP_DOWN_BMP, G_UP_DOWN_BMP_WIDTH, G_UP_DOWN_BMP_HEIGHT, INVERSE);
+  //draw header area
+  display->fillRect(
+      UI_SIDEBAR_X, UI_SIDEBAR_Y,
+      UI_SIDEBAR_WIDTH, 8,
+      WHITE);
 
   //write text
-  display->setTextSize(1);
   display->setTextColor(INVERSE);
   display->setCursor(UI_SIDEBAR_X + 1, UI_SIDEBAR_Y);
 
@@ -154,11 +140,9 @@ void Interface::drawCargoSidebar()
 
   char buffer[3];
   unsigned char line = 0;
-  for (int i = game->menuWindowOption; i < NUM_RESOURCES; i++)
+  for (int i = NUM_RESOURCES - 1; i >= 0; i--)
   {
-    int c = (NUM_RESOURCES - 1) - i;
-
-    if (game->state.cargo[c] == 0)
+    if (game->state.cargo[i] == 0)
     {
       continue;
     }
@@ -169,13 +153,13 @@ void Interface::drawCargoSidebar()
 
     line++;
 
-    strcpy_P(buffer, (char *)pgm_read_word(&(RESOURCE_NAMES[c])));
+    strcpy_P(buffer, (char *)pgm_read_word(&(RESOURCE_NAMES[i])));
 
     display->print(buffer);
     display->print(F(" x "));
 
     char valBuffer[8];
-    abbreviateNumber(game->state.cargo[c], valBuffer, 0);
+    abbreviateNumber(game->state.cargo[i], valBuffer, 0);
     display->println(valBuffer);
   }
 }
@@ -189,7 +173,6 @@ void Interface::drawInfoSidebar()
       WHITE);
 
   display->setTextWrap(true);
-  display->setTextSize(1);
   display->setTextColor(WHITE);
 
   char buffer[40];
@@ -270,8 +253,8 @@ void Interface::drawInfoSidebar()
 
 void Interface::drawPick()
 {
-  unsigned char frame = game->gameboard->triggerBtn.read();
-
+  unsigned char frame = !digitalRead(PIN_TRIGGER) || game->pickFrame;
+  
   display->drawBitmap(
       8,
       35,
@@ -285,8 +268,11 @@ void Interface::drawPick()
 void Interface::drawDrill()
 {
   unsigned char frame = game->drillFrame;
-  if(digitalRead(PIN_TRIGGER) == LOW){
+  if(digitalRead(PIN_BOOST) == LOW && digitalRead(PIN_TRIGGER) == LOW){
     frame += 2;
+  }
+  else if(!digitalRead(PIN_TRIGGER) || game->pickFrame){
+    frame = 3;
   }
 
   display->drawBitmap(
@@ -308,37 +294,29 @@ void Interface::drawDrill()
 
 void Interface::drawMenu()
 {
-  switch (game->menuSelectedPage + game->menuSelectedOption)
-  {
-  case MENU_MAIN_OPT_SELL_CARGO:
+  if(game->menuSelectedPage + game->menuSelectedOption == MENU_MAIN_OPT_SELL_CARGO){
     drawCargoSidebar();
-    break;
-
-  default:
+  }
+  else{
     drawInfoSidebar();
-    break;
   }
 
-  //write text
-  display->setTextSize(1);
   display->setTextColor(WHITE);
   display->setCursor(0, 0);
 
-  char buffer[11];
+  char buffer[12];
   for (int i = game->menuSelectedPage; i < game->menuSelectedPage + MENU_PAGE_SIZE; i++)
   {
     strcpy_P(buffer, (char *)pgm_read_word(&(MENU_OPTION_LABELS[i])));
     display->println(buffer);
   }
 
-  if (game->menuSelectedWindow == 0)
-  {
-    int y = game->menuSelectedOption * 8;
-    display->fillRect(
-        0, y,
-        126 - UI_SIDEBAR_WIDTH, 8,
-        INVERSE);
-  }
+  int y = game->menuSelectedOption * 8;
+
+  display->fillRect(
+      0, y,
+      126 - UI_SIDEBAR_WIDTH, 8,
+      INVERSE);
 
   drawMenuFooter();
 }

@@ -30,7 +30,7 @@ const char *const RESOURCE_NAMES[] PROGMEM = {
 };
 
 const unsigned long RESOURCE_VALUES [NUM_RESOURCES] PROGMEM = {
-    1, 10, 25, 100, 500, 2500, 10000, 50000, 250000, 1000000
+    1, 2, 4, 8, 16, 32, 64, 128, 256, 512
 };
 
 #define BASE 1000000

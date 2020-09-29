@@ -43,6 +43,10 @@ int getUpgradeFromMenuItem(unsigned char menuItem){
     case MENU_HIRE_OPT_MANAGER:
       up = UP_MANAGER;
       break;
+
+    case MENU_BUY_OPT_BRAIN_STEM:
+      up = UP_BRAIN;
+      break;
   }
 
   return up;
@@ -99,6 +103,10 @@ void upgradeAccountant(Game* game, const unsigned long val){
 
 void upgradeManager(Game* game, const unsigned long val){
   game->state.managers = val;
+}
+
+void upgradeBrain(Game* game, const unsigned long val){
+  game->state.brain = val;
 }
 
 unsigned char getNumUpgrades(unsigned char up){

@@ -29,9 +29,10 @@
   
 #define MENU_BUY_OPT_BACK               (MENU_BUY_PAGE + 0)
 #define MENU_BUY_OPT_PICK               (MENU_BUY_PAGE + 1)
-#define MENU_BUY_OPT_CALCULATOR         (MENU_BUY_PAGE + 2)
-#define MENU_BUY_OPT_CARGO              (MENU_BUY_PAGE + 3)
-#define MENU_BUY_OPT_CONVEYOR_BELT      (MENU_BUY_PAGE + 4)
+#define MENU_BUY_OPT_CARGO              (MENU_BUY_PAGE + 2)
+#define MENU_BUY_OPT_BRAIN_STEM         (MENU_BUY_PAGE + 3)
+#define MENU_BUY_OPT_CALCULATOR         (MENU_BUY_PAGE + 4)
+#define MENU_BUY_OPT_CONVEYOR_BELT      (MENU_BUY_PAGE + 5)
   
 #define MENU_BUY2_OPT_BACK              (MENU_BUY2_PAGE + 0)
 #define MENU_BUY2_OPT_DRILL             (MENU_BUY2_PAGE + 1)
@@ -76,6 +77,8 @@ const char MENU_OPTIONS_LABEL[] PROGMEM =       "Options";
 const char MENU_MUTE_LABEL[] PROGMEM =          "(un)Mute";
 const char MENU_SAVE_LABEL[] PROGMEM =          "Save";
 const char MENU_LOAD_LABEL[] PROGMEM =          "Load";
+const char MENU_BRAIN_STEM_LABEL[] PROGMEM =    "Brain Stem";
+
 
 const char MENU_HIRE_INFO[] PROGMEM =                 "Hire \nworkers tohelp out";
 const char MENU_SHOP_INFO[] PROGMEM =                 "Buy and\nupgrade\nyour items";
@@ -93,6 +96,7 @@ const char MENU_BUY_PICK_INFO[] PROGMEM =             "Increase\nore pickedper u
 const char MENU_BUY_IDLE_INFO[] PROGMEM =             "Idle speedincrease";
 const char MENU_BUY_BEARINGS_INFO[] PROGMEM =         "Drill\nstays fastfor longer";
 const char MENU_BUY_NITRO_INFO[] PROGMEM =            "Redlining\nthe drill\nmultipliesyield";
+const char MENU_BUY_BRAIN_STEM_INFO[] PROGMEM =       "Mine\nwithout\nclicking\n(slowly)";
 
 const char MENU_HIRE_ACCOUNTANT_INFO[] PROGMEM =      "Sells\nx of worstcargo\nper y sec";
 const char MENU_HIRE_MANAGER_INFO[] PROGMEM =         "Increases\nrate of\naccountantsales";
@@ -122,10 +126,10 @@ const char *const MENU_OPTION_LABELS[] PROGMEM = {
   //BUY MENU 1
   MENU_BACK_LABEL,
   MENU_PICK_LABEL,
-  MENU_CALCULATOR_LABEL,
   MENU_CARGO_LABEL,
+  MENU_BRAIN_STEM_LABEL,
+  MENU_CALCULATOR_LABEL,
   MENU_CONVEYOR_BELT_LABEL,
-  MENU_NULL_LABEL,
 
   //BUY MENU 2
   MENU_BACK_LABEL,
@@ -181,10 +185,10 @@ const char *const MENU_OPTION_INFOS[] PROGMEM = {
   //BUY MENU 1
   MENU_NULL_LABEL,
   MENU_BUY_PICK_INFO,
-  MENU_BUY_CALCULATOR_INFO,
   MENU_BUY_CARGO_INFO,
+  MENU_BUY_BRAIN_STEM_INFO,
+  MENU_BUY_CALCULATOR_INFO,
   MENU_BUY_CONVEYOR_BELT_INFO,
-  MENU_NULL_LABEL,
 
   //BUY MENU 2
   MENU_NULL_LABEL,

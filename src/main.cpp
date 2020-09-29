@@ -4,6 +4,7 @@
 Game game;
 
 void setup() {
+  randomSeed(analogRead(A2));
   game.init();
 }
 

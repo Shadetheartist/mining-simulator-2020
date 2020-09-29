@@ -2,8 +2,6 @@
 #include "resources.h"
 #include <Arduino.h>
 
-
-
 Gameboard::Gameboard()
 {
   pinMode(PIN_LED_RED, OUTPUT);
@@ -21,12 +19,6 @@ Gameboard::Gameboard()
   dpadDownBtn.attach(PIN_DPAD_DOWN, INPUT);
   dpadDownBtn.interval(DEBOUNCE_MS);
 
-  dpadLeftBtn.attach(PIN_DPAD_LEFT, INPUT);
-  dpadLeftBtn.interval(DEBOUNCE_MS);
-
-  dpadRightBtn.attach(PIN_DPAD_RIGHT, INPUT);
-  dpadRightBtn.interval(DEBOUNCE_MS);
-
   dpadMiddleBtn.attach(PIN_DPAD_MIDDLE, INPUT);
   dpadMiddleBtn.interval(DEBOUNCE_MS);
 
@@ -36,44 +28,41 @@ Gameboard::Gameboard()
   mute = false;
 }
 
-void Gameboard::triggerDrillSound(unsigned char resource){
-  if(mute){ return; }
-  
+void playTone(unsigned int d){
+  digitalWrite(PIN_CLICKER, HIGH);
+  delayMicroseconds(d);
+  digitalWrite(PIN_CLICKER, LOW);
+  delayMicroseconds(d);
+}
+
+void Gameboard::triggerDrillSound(char resource){
   triggerPickSound(resource);
 }
 
 void Gameboard::triggerClickSound(){
   if(mute){ return; }
-  
-  digitalWrite(PIN_CLICKER, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(PIN_CLICKER, LOW);
+  playTone(10);
 }
 
 void Gameboard::triggerBadSound(){
   if(mute){ return; }
   
   for(unsigned char i = 0; i < 16; i++){
-    digitalWrite(PIN_CLICKER, HIGH);
-    delayMicroseconds(100);
-    digitalWrite(PIN_CLICKER, LOW); 
-    delayMicroseconds(10);
+    playTone(500);
   }
 }
 
 void Gameboard::triggerMeepSound(){
   if(mute){ return; }
   
-  for(int i = 0; i < 3; i++){
-    digitalWrite(PIN_CLICKER, HIGH);
-    delay(1);
-    digitalWrite(PIN_CLICKER, LOW); 
-    delay(1);
+  for(int i = 0; i < 2; i++){
+    playTone(1000);
   }
 }
 
-void Gameboard::triggerPickSound(unsigned char resource){
+void Gameboard::triggerPickSound(char resource){
   if(mute){ return; }
+  if(resource == -1){ return; }
 
   int d = 0;
   int n = 0;
@@ -91,10 +80,7 @@ void Gameboard::triggerPickSound(unsigned char resource){
   }
   
   for(int i = 0; i < n; i++){
-    digitalWrite(PIN_CLICKER, HIGH);
-    delayMicroseconds(d);
-    digitalWrite(PIN_CLICKER, LOW); 
-    delayMicroseconds(d);
+    playTone(d);
   }
 }
 
@@ -102,20 +88,8 @@ void Gameboard::triggerPickSound(unsigned char resource){
 void Gameboard::triggerMoneySound(){
   if(mute){ return; }
 
-  for(int i = 0; i < 8; i++){
-    digitalWrite(PIN_CLICKER, HIGH);
-    delayMicroseconds(500);
-    digitalWrite(PIN_CLICKER, LOW); 
-    delayMicroseconds(500);
-  }
-  
-  delay(20);
-
-  for(int i = 0; i < 100; i++){
-    digitalWrite(PIN_CLICKER, HIGH);
-    delayMicroseconds(100);
-    digitalWrite(PIN_CLICKER, LOW); 
-    delayMicroseconds(100);
+  for(int i = 0; i < 5; i++){
+    playTone(150);
   }
 }
 
@@ -123,19 +97,13 @@ void Gameboard::triggerSpendSound(){
   if(mute){ return; }
 
   for(int i = 0; i < 16; i++){
-    digitalWrite(PIN_CLICKER, HIGH);
-    delayMicroseconds(200);
-    digitalWrite(PIN_CLICKER, LOW); 
-    delayMicroseconds(200);
+    playTone(200);
   }
   
   delay(50);
 
   for(int i = 0; i < 16; i++){
-    digitalWrite(PIN_CLICKER, HIGH);
-    delayMicroseconds(500);
-    digitalWrite(PIN_CLICKER, LOW); 
-    delayMicroseconds(500);
+    playTone(500);
   }
   
 }

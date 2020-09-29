@@ -15,51 +15,62 @@ Game::Game()
   gameboard = new Gameboard();
 }
 
-void Game::init()
-{
+void initState(Game* game){
+  game->state.filter = UP_FILTER_INITIAL_VALUE;
+  game->state.money = 1000000;
+  game->state.numMinedPerPickUse = UP_PICK_INITIAL_VALUE;
+  game->state.currentLocation = 0;
+  game->state.maxCargo = UP_CARGO_INITIAL_VALUE;
+  game->state.cargoSoldPerIteration = UP_CONVEYOR_BELT_INITIAL_VALUE;
+  game->state.cargoSellDelay = UP_CALCULATOR_INITIAL_VALUE;
+  game->state.drillIdle = UP_DRILL_IDLE_INITIAL_VALUE;
+  game->state.drillTempDecrease = UP_DRILL_BEARINGS_INITIAL_VALUE;
+  game->state.drillNitro = UP_DRILL_NITRO_INITIAL_VALUE;
+  game->state.accountants = 0;
+  game->state.managers = UP_MANAGER_INITIAL_VALUE;
+  game->state.numMinedPerDrillUse = UP_DRILL_INITIAL_VALUE;
+  game->state.brain = 0;
+
   for(int i = 0; i < NUM_RESOURCES; i++)
   {
-    state.cargo[i] = 0;
+    game->state.cargo[i] = 0;
   }
 
   for(int i = 0; i < NUM_UPGRADES; i++)
   {
-    state.upgrades[i] = 0;
+    game->state.upgrades[i] = 0;
   }
-  
-  state.filter = 0;
-  state.money = 0;
-  state.numMinedPerPickUse = 1;
-  state.currentLocation = 0;
-  state.maxCargo = 25;
-  state.cargoSoldPerIteration = 1;
-  state.cargoSellDelay = 255;
-  state.drillIdle = UP_DRILL_IDLE_INITIAL_VALUE;
-  state.drillTempDecrease = UP_DRILL_BEARINGS_INITIAL_VALUE;
-  state.drillNitro = UP_DRILL_NITRO_INITIAL_VALUE;
-  state.accountants = 0;
-  state.managers = UP_MANAGER_INITIAL_VALUE;
-  state.numMinedPerDrillUse = 0;
 
-  isShowingMenu = false;
-  shouldDraw = true;
-  menuSelectedPage = 0;
+}
 
-  menuSelectedWindow = 0;
-  menuWindowOption = 0;
+void initDynamics(Game* game){
+  game->isShowingMenu = false;
+  game->shouldDraw = true;
+  game->menuSelectedPage = 0;
+  game->menuSelectedOption = 0;
+  game->drillFrame = 0;
+  game->drillTemp = 0;
+  game->maxDrillTemp = 1000;
+  game->drillTempIncrase = 12;
+  game->lastDrillDecreaseMs = 0;
+  game->accountantSellMs = 0;
+  game->cargoChanged = true;
+  game->lastCargoPercentage = 0;
+  game->accountantSellMs = 0;
 
-  drillTemp = 0;
-  maxDrillTemp = 1000;
-  drillTempIncrase = 8;
-  lastDrillDecreaseMs = 0;
-  
-  accountantSellMs = 0;
+  game->gameboard->setBlueLED(LOW);
+  game->gameboard->setLowerGreenLED(LOW);
+  game->gameboard->setUpperGreenLED(LOW);
+  game->gameboard->setRedLED(LOW);
+  game->gameboard->mute = false;
 
-  gameboard->setBlueLED(LOW);
-  gameboard->setLowerGreenLED(LOW);
-  gameboard->setUpperGreenLED(LOW);
-  gameboard->setRedLED(LOW);
-  
+}
+
+
+void Game::init()
+{
+  initState(this);
+  initDynamics(this);
   interface->init();
 }
 
@@ -69,6 +80,7 @@ void Game::save(){
 
 void Game::load(){
   EEPROM.get(0, state);
+  initDynamics(this);
 }
 
 void Game::accountantPassive(){
@@ -141,42 +153,81 @@ char Game::getRandomResource(){
   return -1;
 }
 
-char Game::mine(unsigned long amount)
+
+void Game::drillIdleSound()
 {
-  if (getCargoPercentage() >= 100)
-  {
-    return -1;
+  float heatPercentage = drillTemp / maxDrillTemp;
+  
+  if(digitalRead(PIN_BOOST) && heatPercentage < 0.01){
+    return;
   }
 
+  if(!digitalRead(PIN_TRIGGER) && digitalRead(PIN_BOOST)){
+    return;
+  }
+  
+  unsigned char rpm = 2;
+  if(!digitalRead(PIN_TRIGGER) && !digitalRead(PIN_BOOST)){
+    rpm = 3;
+  }
+
+
+  float ms = (state.drillIdle - (heatPercentage * state.drillIdle)) / rpm;
+  ms = min(ms, 250);
+
+  if(micros() - lastDrillIdleUs > ms * 1000){
+    lastDrillIdleUs = micros();
+    gameboard->triggerClickSound();
+  }
+}
+
+
+char Game::mine(unsigned long amount)
+{
+  unsigned long remainingSpace = state.maxCargo - getTotalCargo();
+
+  if(remainingSpace == 0){
+    return -1;
+  }
+  
   unsigned char resource = getRandomResource();
 
   if(resource < state.filter){
-    return -1;
+    return -2;
   }
 
-  state.cargo[resource] += amount;
+  state.cargo[resource] += min(remainingSpace, amount);
+  cargoChanged = true;
 
   return resource;
 }
 
 void Game::pick()
 {
-  char bestResource = 0;
+  char bestResource = -2;
 
   for(unsigned int n = 0; n < state.numMinedPerPickUse; n++){
     char resource = mine(1);
-    
-    if(resource == -1){
-      continue;
-    }
-
+   
     if(resource > bestResource){
       bestResource = resource;
     }
-  }
-  
 
-  if(bestResource != -1){
+    if(resource == -1){
+      break;
+    }
+  }
+
+  if(bestResource == -1){
+    gameboard->triggerBadSound();
+  }
+
+  //if we dug stuff that was totally filtered out then just use the poo sound
+  if(bestResource == -2){
+    bestResource = 0;
+  }
+
+  if(bestResource >= 0){
     gameboard->triggerPickSound(bestResource);
   }
   
@@ -193,7 +244,6 @@ void Game::drill()
       drillFrame = 1;
     }
 
-    char bestResource = 0;
     float heatPercentage = drillTemp / maxDrillTemp;
   
     unsigned char nitro = 1;
@@ -202,10 +252,7 @@ void Game::drill()
     }
     
     char resource = mine(state.numMinedPerDrillUse * nitro);
-    if(resource != -1){
-
-    }
-
+    
     if(digitalRead(PIN_TRIGGER) == LOW){
       drillTemp += drillTempIncrase;
       
@@ -220,7 +267,20 @@ void Game::drill()
     
     drillPassive();
 
-    gameboard->triggerDrillSound(bestResource);
+    if(resource == -1){
+      gameboard->triggerBadSound();
+      delay(50);
+    }
+
+    //if we dug stuff that was totally filtered out then just use the poo sound
+    if(resource == -2){
+      resource = 0;
+    }
+
+    if(resource >= 0){
+      gameboard->triggerDrillSound(resource);
+    }
+
     interface->draw();
 
     unsigned long waitMillis = millis() + (state.drillIdle - (heatPercentage * state.drillIdle));
@@ -229,25 +289,10 @@ void Game::drill()
       if(gameboard->boostBtn.rose()){
         return;
       }
-
-      unsigned char rpm = 2;
-      if(!digitalRead(PIN_TRIGGER)){
-        rpm = 3;
-      }
-
-      gameboard->triggerClickSound();
-      float d = (state.drillIdle - (heatPercentage * state.drillIdle)) / rpm;
-      if(d > 0){
-        delay(d);
-      }
-      else{
-        delayMicroseconds(d * 1000);
-      }
+      drillIdleSound();
     }
   }
 
-  drillFrame = 0;
-  shouldDraw = true;
 }
 
 void Game::upgrade(unsigned char up)
@@ -285,23 +330,21 @@ unsigned long Game::getCargoPercentage()
     return lastCargoPercentage;
   }
   
-  float percentCargoFullness = 0;
-  for (int i = 0; i < NUM_RESOURCES; i++)
-  {
-    percentCargoFullness += state.cargo[i];
-  }
-
-  lastCargoPercentage = ((percentCargoFullness / state.maxCargo) * 100);
+  lastCargoPercentage = round(((getTotalCargo() / state.maxCargo) * 100));
+  
   return lastCargoPercentage;
 }
 
-
-void Game::showMenu()
+float Game::getTotalCargo()
 {
-  menuSelectedOption = 0;
-  isShowingMenu = true;
-  shouldDraw = true;
-  gameboard->triggerMeepSound();
+  float totalCargo = 0;
+
+  for (int i = 0; i < NUM_RESOURCES; i++)
+  {
+    totalCargo += state.cargo[i];
+  }
+
+  return totalCargo;
 }
 
 void Game::sellCargo()
@@ -340,18 +383,13 @@ void Game::menuUpdate()
   gameboard->triggerBtn.update();
   gameboard->dpadUpBtn.update();
   gameboard->dpadDownBtn.update();
-  gameboard->dpadLeftBtn.update();
-  gameboard->dpadRightBtn.update();
   gameboard->dpadMiddleBtn.update();
 
   if (gameboard->triggerBtn.fell())
   {
     isShowingMenu = false;
-    menuSelectedWindow = 0;
-
-    //remove these if you dont want menu reset
-    menuWindowOption = 0;
     menuSelectedPage = 0;
+    menuSelectedOption = 0;
 
     return;
   }
@@ -456,6 +494,7 @@ void Game::menuUpdate()
     case MENU_MAIN_OPT_MOVE:
     case MENU_HIRE_OPT_ACCOUNTANT:
     case MENU_HIRE_OPT_MANAGER:
+    case MENU_BUY_OPT_BRAIN_STEM:
       char up = getUpgradeFromMenuItem(menuSelectedPage + menuSelectedOption);
       upgrade(up);
       break;
@@ -471,23 +510,13 @@ void Game::menuUpdate()
 
   if (gameboard->dpadUpBtn.fell())
   {
-    if (menuSelectedWindow == 0)
+    if (menuSelectedOption == 0)
     {
-      if (menuSelectedOption == 0)
-      {
-        menuSelectedOption = MENU_PAGE_SIZE - 1;
-      }
-      else
-      {
-        menuSelectedOption--;
-      }
+      menuSelectedOption = MENU_PAGE_SIZE - 1;
     }
     else
     {
-      if (menuWindowOption > 0)
-      {
-        menuWindowOption--;
-      }
+      menuSelectedOption--;
     }
 
     gameboard->triggerMeepSound();
@@ -496,40 +525,14 @@ void Game::menuUpdate()
 
   if (gameboard->dpadDownBtn.fell())
   {
-    if (menuSelectedWindow == 0)
-    {
-      menuSelectedOption++;
+    menuSelectedOption++;
 
-      //loop to top
-      if (menuSelectedOption >= MENU_PAGE_SIZE)
-      {
-        menuSelectedOption = 0;
-      }
-    }
-    else
+    //loop to top
+    if (menuSelectedOption >= MENU_PAGE_SIZE)
     {
-      if (menuWindowOption < 0xff)
-      {
-        menuWindowOption++;
-      }
+      menuSelectedOption = 0;
     }
 
-    gameboard->triggerMeepSound();
-    shouldDraw = true;
-  }
-
-  if (menuSelectedWindow == 0 && gameboard->dpadRightBtn.fell())
-  {
-    menuSelectedWindow = 1;
-    menuWindowOption = 0;
-    gameboard->triggerMeepSound();
-    shouldDraw = true;
-  }
-
-  if (menuSelectedWindow == 1 && gameboard->dpadLeftBtn.fell())
-  {
-    menuSelectedWindow = 0;
-    menuWindowOption = 0;
     gameboard->triggerMeepSound();
     shouldDraw = true;
   }
@@ -541,11 +544,34 @@ void Game::menuUpdate()
   }
 }
 
+
 void Game::update()
 {
   drillPassive();
   accountantPassive();
- 
+  
+  if(state.upgrades[UP_DRILL] > 0){
+    drillIdleSound();
+  }
+
+  if(state.brain != 0){
+    if(digitalRead(PIN_TRIGGER) && digitalRead(PIN_BOOST) && millis() - lastBrainPickMs > state.brain && getCargoPercentage() < 100){
+      lastBrainPickMs = millis();
+
+      pickFrame = 1;
+
+      if(isShowingMenu == false){
+        interface->draw();
+      }
+
+      pick();
+      pickFrame = 0;
+
+      shouldDraw = true;
+     
+    }
+  }
+
   if (isShowingMenu)
   {
     menuUpdate();
@@ -559,12 +585,15 @@ void Game::update()
   if (state.upgrades[UP_DRILL] > 0 && gameboard->boostBtn.fell())
   {
     drill();
+    drillFrame = 0;
+    shouldDraw = true;
   }
 
   if (gameboard->triggerBtn.fell())
   {
     interface->draw();
     pick();
+    lastBrainPickMs = millis();
     shouldDraw = false;
   }
   else if (gameboard->triggerBtn.rose())
@@ -574,8 +603,12 @@ void Game::update()
 
   if (gameboard->dpadMiddleBtn.fell())
   {
-    showMenu();
+    menuSelectedOption = 0;
+    isShowingMenu = true;
+    shouldDraw = true;
+    gameboard->triggerMeepSound();
   }
+
 
   if (shouldDraw)
   {

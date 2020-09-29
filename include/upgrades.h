@@ -16,19 +16,21 @@
 #define UP_MOVE 9
 #define UP_ACCOUNTANT 10
 #define UP_MANAGER 11
+#define UP_BRAIN 12
 
 #define UP_PICK_INITIAL_VALUE 1
 #define UP_DRILL_INITIAL_VALUE 0
 #define UP_CALCULATOR_INITIAL_VALUE 255
 #define UP_FILTER_INITIAL_VALUE 0
 #define UP_CONVEYOR_BELT_INITIAL_VALUE 1
-#define UP_CARGO_INITIAL_VALUE 5
-#define UP_DRILL_IDLE_INITIAL_VALUE 250
+#define UP_CARGO_INITIAL_VALUE 25
+#define UP_DRILL_IDLE_INITIAL_VALUE 500
 #define UP_DRILL_BEARINGS_INITIAL_VALUE 4
-#define UP_DRILL_NITRO_INITIAL_VALUE 1
+#define UP_DRILL_NITRO_INITIAL_VALUE 2
 #define UP_MANAGER_INITIAL_VALUE 30
+#define UP_BRAIN_INITIAL_VALUE 0
 
-#define UP_PICK_NUM_UPGRADES 13
+#define UP_PICK_NUM_UPGRADES 12
 const unsigned long UP_PICK_COST[] PROGMEM = {
   0, 
   50,
@@ -42,11 +44,9 @@ const unsigned long UP_PICK_COST[] PROGMEM = {
   3276800,
   13107200,
   52428800,
-  209715200,
 };
 const unsigned long UP_PICK_VALUE[] PROGMEM = {
   UP_PICK_INITIAL_VALUE,
-  1,
   2,
   4,
   8,
@@ -60,33 +60,22 @@ const unsigned long UP_PICK_VALUE[] PROGMEM = {
   2048,
 };
 
-#define UP_DRILL_NUM_UPGRADES 19
+#define UP_DRILL_NUM_UPGRADES 11
 const unsigned long UP_DRILL_COST[] PROGMEM = {
   0, 
+  12500,
   25000,
-  50000,
   100000,
-  200000,
   400000,
-  800000,
   1600000,
-  3200000,
   6400000,
-  12800000,
   25600000,
-  51200000,
   102400000,
-  204800000,
   409600000,
-  819200000,
   1638400000,
-  3276800000,
 };
 const unsigned long UP_DRILL_VALUE[] PROGMEM = {
   UP_DRILL_INITIAL_VALUE,
-  1,
-  2,
-  4,
   8,
   16,
   32,
@@ -97,10 +86,6 @@ const unsigned long UP_DRILL_VALUE[] PROGMEM = {
   1024,
   2048,
   4096,
-  8192,
-  16384,
-  32768,
-  65536,
 };
 
 #define UP_CALCULATOR_NUM_UPGRADES 7
@@ -167,40 +152,41 @@ const unsigned long UP_CONVEYOR_BELT_VALUE[] PROGMEM = {
   16777216,
 };
 
-#define UP_DRILL_IDLE_NUM_UPGRADES 10
+#define UP_DRILL_IDLE_NUM_UPGRADES 7
 const unsigned long UP_DRILL_IDLE_COST[] PROGMEM = {
   0,
   1000000,
-  2000000,
-  4000000,
-  8000000,
-  16000000,
-  32000000,
-  64000000,
-  128000000,
-  256000000,
+  5000000,
+  25000000,
+  125000000,
+  625000000,
+  3125000000,
 };
 
 const unsigned long UP_DRILL_IDLE_VALUE[] PROGMEM = {
   UP_DRILL_IDLE_INITIAL_VALUE, 
-  225,
-  200,
-  175,
-  150,
-  125,
-  100,
-  75,
-  50,
-  25,
+  417,
+  333,
+  250,
+  167,
+  83,
+  0,
 };
 
 #define UP_DRILL_BEARINGS_NUM_UPGRADES 5
 const unsigned long UP_DRILL_BEARINGS_COST[] PROGMEM = {0, 1000000, 2000000, 4000000, 0xffffffff};
 const unsigned long UP_DRILL_BEARINGS_VALUE[] PROGMEM = {UP_DRILL_BEARINGS_INITIAL_VALUE, 3, 2, 1, 0};
 
-#define UP_DRILL_NITRO_NUM_UPGRADES 7
-const unsigned long UP_DRILL_NITRO_COST[] PROGMEM = {0, 1000000, 2000000, 4000000, 8000000, 16000000, 32000000};
-const unsigned long UP_DRILL_NITRO_VALUE[] PROGMEM = {UP_DRILL_NITRO_INITIAL_VALUE, 2, 4, 8, 16, 32, 64};
+#define UP_DRILL_NITRO_NUM_UPGRADES 6
+const unsigned long UP_DRILL_NITRO_COST[] PROGMEM = {
+  0, 
+  1000000,
+  8000000,
+  64000000,
+  512000000,
+  4096000000,
+};
+const unsigned long UP_DRILL_NITRO_VALUE[] PROGMEM = {UP_DRILL_NITRO_INITIAL_VALUE, 4, 8, 16, 32, 64};
 
 #define UP_CARGO_NUM_UPGRADES 25
 const unsigned long UP_CARGO_COST[] PROGMEM = {
@@ -260,7 +246,14 @@ const unsigned long UP_CARGO_VALUE[] PROGMEM = {
 };
 
 #define UP_MOVE_NUM_UPGRADES 5
-const unsigned long UP_MOVE_COST[] PROGMEM = {0, 50000, 50000 * 10, 50000 * 100, 50000 * 1000};
+const unsigned long UP_MOVE_COST[] PROGMEM = {
+  0,
+  50000,
+  500000,
+  5000000,
+  50000000,
+  500000000
+};
 const unsigned long UP_MOVE_VALUE[] PROGMEM = {0, 1, 2, 3, 4};
 
 #define UP_ACCOUNTANT_NUM_UPGRADES 11
@@ -312,6 +305,12 @@ const unsigned long UP_ACCOUNTANT_VALUE[] PROGMEM = {
 const unsigned long UP_MANAGER_COST[] PROGMEM = {0, 50000, 250000, 250000 * 5, 250000 * 5 * 5, 250000 * 5 * 5 * 5};
 const unsigned long UP_MANAGER_VALUE[] PROGMEM = {UP_MANAGER_INITIAL_VALUE, 25, 20, 15, 10, 5};
 
+
+#define UP_BRAIN_NUM_UPGRADES 5
+const unsigned long UP_BRAIN_COST[] PROGMEM = {0, 100, 1000, 10000, 10000};
+const unsigned long UP_BRAIN_VALUE[] PROGMEM = {UP_BRAIN_INITIAL_VALUE, 2000, 1000, 500, 333};
+
+
 const unsigned char NUM_UPGRADES_TABLE[] PROGMEM = {
   UP_PICK_NUM_UPGRADES,
   UP_DRILL_NUM_UPGRADES,
@@ -324,7 +323,8 @@ const unsigned char NUM_UPGRADES_TABLE[] PROGMEM = {
   UP_DRILL_NITRO_NUM_UPGRADES,
   UP_MOVE_NUM_UPGRADES,
   UP_ACCOUNTANT_NUM_UPGRADES,
-  UP_MANAGER_NUM_UPGRADES
+  UP_MANAGER_NUM_UPGRADES,
+  UP_BRAIN_NUM_UPGRADES
 };
 
 const unsigned long* const UP_COSTS[] PROGMEM = {
@@ -339,7 +339,8 @@ const unsigned long* const UP_COSTS[] PROGMEM = {
   UP_DRILL_NITRO_COST,
   UP_MOVE_COST,
   UP_ACCOUNTANT_COST,
-  UP_MANAGER_COST
+  UP_MANAGER_COST,
+  UP_BRAIN_COST
 };
 
 const unsigned long* const UP_VALUES[] PROGMEM = {
@@ -354,7 +355,8 @@ const unsigned long* const UP_VALUES[] PROGMEM = {
   UP_DRILL_NITRO_VALUE,
   UP_MOVE_VALUE,
   UP_ACCOUNTANT_VALUE,
-  UP_MANAGER_VALUE
+  UP_MANAGER_VALUE,
+  UP_BRAIN_VALUE
 }; 
 
 class Game;
@@ -379,6 +381,7 @@ void upgradeDrillNitro(Game* game, const unsigned long val);
 void upgradeMove(Game* game, const unsigned long val);
 void upgradeAccountant(Game* game, const unsigned long val);
 void upgradeManager(Game* game, const unsigned long val);
+void upgradeBrain(Game* game, const unsigned long val);
 
 const UpgradeFunctionPtr PROGMEM UP_UPGRADE_FUNCTIONS[] = {
   &upgradePick,
@@ -393,6 +396,7 @@ const UpgradeFunctionPtr PROGMEM UP_UPGRADE_FUNCTIONS[] = {
   &upgradeMove,
   &upgradeAccountant,
   &upgradeManager,
+  &upgradeBrain,
 };
 
 #endif

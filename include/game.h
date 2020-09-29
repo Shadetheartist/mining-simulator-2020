@@ -12,12 +12,13 @@ struct GameState {
   unsigned char currentLocation;
   unsigned int numMinedPerPickUse;
   unsigned char cargoSellDelay;
-  unsigned char drillIdle;
+  unsigned int drillIdle;
   unsigned char drillTempDecrease;
   unsigned char drillNitro;
   unsigned char filter;
   unsigned char accountants;
   unsigned char managers;
+  unsigned int brain;
   unsigned char upgrades[NUM_UPGRADES];
   
   float maxCargo;
@@ -36,9 +37,8 @@ class Game {
         bool isShowingMenu;
         unsigned char menuSelectedOption;
         unsigned char menuSelectedPage;
-        unsigned char menuSelectedWindow;
-        unsigned char menuWindowOption;
         unsigned char drillFrame;
+        unsigned char pickFrame;
 
         float drillTemp;
         unsigned int maxDrillTemp;
@@ -49,6 +49,8 @@ class Game {
         unsigned long lastCargoPercentage;
         
         unsigned long accountantSellMs;
+        unsigned long lastBrainPickMs;
+        unsigned long lastDrillIdleUs;
 
         GameState state;
         Interface *interface;
@@ -59,13 +61,13 @@ class Game {
         void init();
         void update();
         void menuUpdate();
-        void err();
-        void showMenu();
+        float getTotalCargo();
         unsigned long getCargoPercentage();
         void sellCargo();
         void addMoney(const unsigned long amount);
         void upgrade(const unsigned char up);
         void drillPassive();
+        void drillIdleSound();
         void accountantPassive();
 
         char getRandomResource();
