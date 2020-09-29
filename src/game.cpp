@@ -17,7 +17,7 @@ Game::Game()
 
 void initState(Game* game){
   game->state.filter = UP_FILTER_INITIAL_VALUE;
-  game->state.money = 1000000;
+  game->state.money = 0;
   game->state.numMinedPerPickUse = UP_PICK_INITIAL_VALUE;
   game->state.currentLocation = 0;
   game->state.maxCargo = UP_CARGO_INITIAL_VALUE;
