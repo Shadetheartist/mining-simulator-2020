@@ -1,7 +1,7 @@
-base = 50000
+base = 10000
 
-for i in range(0, 32):
-  n = base * pow(100, i)
+for i in range(0, 11):
+  n = base * pow(2, i)
   if n > pow(2, 32):
     break
 

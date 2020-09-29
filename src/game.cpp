@@ -193,7 +193,8 @@ char Game::mine(unsigned long amount)
   unsigned char resource = getRandomResource();
 
   if(resource < state.filter){
-    return -2;
+    resource = min(NUM_RESOURCES-1, resource + 1);
+    amount /= 2;
   }
 
   state.cargo[resource] += min(remainingSpace, amount);

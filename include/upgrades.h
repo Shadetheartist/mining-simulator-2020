@@ -2,7 +2,7 @@
 #define UPGRADES_H
 #include <Arduino.h>
 
-#define NUM_UPGRADES 12
+#define NUM_UPGRADES 13
 
 #define UP_PICK 0
 #define UP_DRILL 1
@@ -30,7 +30,7 @@
 #define UP_MANAGER_INITIAL_VALUE 30
 #define UP_BRAIN_INITIAL_VALUE 0
 
-#define UP_PICK_NUM_UPGRADES 12
+#define UP_PICK_NUM_UPGRADES 11
 const unsigned long UP_PICK_COST[] PROGMEM = {
   0, 
   50,
@@ -43,7 +43,6 @@ const unsigned long UP_PICK_COST[] PROGMEM = {
   819200,
   3276800,
   13107200,
-  52428800,
 };
 const unsigned long UP_PICK_VALUE[] PROGMEM = {
   UP_PICK_INITIAL_VALUE,
@@ -57,7 +56,6 @@ const unsigned long UP_PICK_VALUE[] PROGMEM = {
   256,
   512,
   1024,
-  2048,
 };
 
 #define UP_DRILL_NUM_UPGRADES 11
@@ -76,7 +74,6 @@ const unsigned long UP_DRILL_COST[] PROGMEM = {
 };
 const unsigned long UP_DRILL_VALUE[] PROGMEM = {
   UP_DRILL_INITIAL_VALUE,
-  8,
   16,
   32,
   64,
@@ -86,10 +83,11 @@ const unsigned long UP_DRILL_VALUE[] PROGMEM = {
   1024,
   2048,
   4096,
+  8192,
 };
 
 #define UP_CALCULATOR_NUM_UPGRADES 7
-const unsigned long UP_CALCULATOR_COST[] PROGMEM = {0, 100, 200, 400, 800, 1600, 3200};
+const unsigned long UP_CALCULATOR_COST[] PROGMEM = {0, 50, 100, 200, 400, 800, 1600};
 const unsigned long UP_CALCULATOR_VALUE[] PROGMEM = {UP_CALCULATOR_INITIAL_VALUE, 128, 64, 32, 16, 8, 0};
 
 #define UP_FILTER_NUM_UPGRADES 9
@@ -152,29 +150,35 @@ const unsigned long UP_CONVEYOR_BELT_VALUE[] PROGMEM = {
   16777216,
 };
 
-#define UP_DRILL_IDLE_NUM_UPGRADES 7
+#define UP_DRILL_IDLE_NUM_UPGRADES 10
 const unsigned long UP_DRILL_IDLE_COST[] PROGMEM = {
   0,
-  1000000,
-  5000000,
-  25000000,
-  125000000,
-  625000000,
-  3125000000,
+  10000,
+  20000,
+  40000,
+  80000,
+  160000,
+  320000,
+  640000,
+  1280000,
+  2560000,
 };
 
 const unsigned long UP_DRILL_IDLE_VALUE[] PROGMEM = {
   UP_DRILL_IDLE_INITIAL_VALUE, 
-  417,
-  333,
+  450,
+  400,
+  350,
+  300,
   250,
-  167,
-  83,
-  0,
+  200,
+  150,
+  100,
+  50,
 };
 
 #define UP_DRILL_BEARINGS_NUM_UPGRADES 5
-const unsigned long UP_DRILL_BEARINGS_COST[] PROGMEM = {0, 1000000, 2000000, 4000000, 0xffffffff};
+const unsigned long UP_DRILL_BEARINGS_COST[] PROGMEM = {0, 100000, 200000, 400000, 0xffffffff};
 const unsigned long UP_DRILL_BEARINGS_VALUE[] PROGMEM = {UP_DRILL_BEARINGS_INITIAL_VALUE, 3, 2, 1, 0};
 
 #define UP_DRILL_NITRO_NUM_UPGRADES 6
@@ -307,8 +311,8 @@ const unsigned long UP_MANAGER_VALUE[] PROGMEM = {UP_MANAGER_INITIAL_VALUE, 25, 
 
 
 #define UP_BRAIN_NUM_UPGRADES 5
-const unsigned long UP_BRAIN_COST[] PROGMEM = {0, 100, 1000, 10000, 10000};
-const unsigned long UP_BRAIN_VALUE[] PROGMEM = {UP_BRAIN_INITIAL_VALUE, 2000, 1000, 500, 333};
+const unsigned long UP_BRAIN_COST[] PROGMEM = {0, 100, 1000, 10000, 100000};
+const unsigned long UP_BRAIN_VALUE[] PROGMEM = {UP_BRAIN_INITIAL_VALUE, 4000, 3000, 2000, 1000};
 
 
 const unsigned char NUM_UPGRADES_TABLE[] PROGMEM = {
