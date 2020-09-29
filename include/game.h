@@ -10,7 +10,7 @@ class Interface;
 
 struct GameState {
   unsigned char currentLocation;
-  unsigned char numMinedPerPickUse;
+  unsigned int numMinedPerPickUse;
   unsigned char cargoSellDelay;
   unsigned char drillIdle;
   unsigned char drillTempDecrease;
@@ -44,6 +44,9 @@ class Game {
         unsigned int maxDrillTemp;
         unsigned char drillTempIncrase;
         unsigned long lastDrillDecreaseMs;
+
+        bool cargoChanged;
+        unsigned long lastCargoPercentage;
         
         unsigned long accountantSellMs;
 

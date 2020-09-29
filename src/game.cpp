@@ -86,7 +86,10 @@ void Game::accountantPassive(){
       unsigned long numSold = min(state.cargo[i], sellRemaining);
       unsigned long value = resourceValue * numSold;
       sellRemaining -= numSold;
+
+      cargoChanged = true;
       state.cargo[i] -= numSold;
+
       totalSold += value;
     }
     
@@ -142,7 +145,6 @@ char Game::mine(unsigned long amount)
 {
   if (getCargoPercentage() >= 100)
   {
-    gameboard->triggerBadSound();
     return -1;
   }
 
@@ -161,7 +163,7 @@ void Game::pick()
 {
   char bestResource = 0;
 
-  for(unsigned char n = 0; n < state.numMinedPerPickUse; n++){
+  for(unsigned int n = 0; n < state.numMinedPerPickUse; n++){
     char resource = mine(1);
     
     if(resource == -1){
@@ -173,6 +175,7 @@ void Game::pick()
     }
   }
   
+
   if(bestResource != -1){
     gameboard->triggerPickSound(bestResource);
   }
@@ -278,13 +281,18 @@ void Game::upgrade(unsigned char up)
 
 unsigned long Game::getCargoPercentage()
 {
+  if(cargoChanged == false){
+    return lastCargoPercentage;
+  }
+  
   float percentCargoFullness = 0;
   for (int i = 0; i < NUM_RESOURCES; i++)
   {
     percentCargoFullness += state.cargo[i];
   }
 
-  return (unsigned long)((percentCargoFullness / state.maxCargo) * 100);
+  lastCargoPercentage = ((percentCargoFullness / state.maxCargo) * 100);
+  return lastCargoPercentage;
 }
 
 
@@ -314,6 +322,7 @@ void Game::sellCargo()
     unsigned long numSold = min(state.cargo[i], state.cargoSoldPerIteration);
     unsigned long value = resourceValue * numSold;
 
+    cargoChanged = true;
     state.cargo[i] -= numSold;
 
     if(value > 0){
@@ -554,11 +563,11 @@ void Game::update()
 
   if (gameboard->triggerBtn.fell())
   {
+    interface->draw();
     pick();
-    shouldDraw = true;
+    shouldDraw = false;
   }
-
-  if (gameboard->triggerBtn.rose())
+  else if (gameboard->triggerBtn.rose())
   {
     shouldDraw = true;
   }
