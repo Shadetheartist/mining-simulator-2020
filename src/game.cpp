@@ -17,7 +17,7 @@ Game::Game()
 
 void initState(Game* game){
   game->state.charm = UP_CHARM_INITIAL_VALUE;
-  game->state.money = 100000000;
+  game->state.money = 500;
   game->state.numMinedPerPickUse = UP_PICK_INITIAL_VALUE;
   game->state.currentLocation = 0;
   game->state.maxCargo = UP_CARGO_INITIAL_VALUE;
@@ -86,7 +86,8 @@ void Game::load(){
 }
 
 void Game::accountantPassive(){
-  if(state.accountants > 0 && millis() - accountantSellMs > state.managers * 1000){
+  if(state.accountants > 0 && millis() - accountantSellMs > state.managers + state.cargoSellDelay * 100){
+    
     accountantSellMs = millis();
     unsigned int totalSold = 0;
     unsigned long sellRemaining = state.accountants;
@@ -117,7 +118,7 @@ void Game::accountantPassive(){
 
 
 void Game::dumperPassive(){
-  if(state.dumper > 0 && state.cargo[0] > 0 && millis() - dumperDumpMs > state.managers * 1000){
+  if(state.dumper > 0 && state.cargo[0] > 0 && millis() - dumperDumpMs > state.managers){
     dumperDumpMs = millis();
     state.cargo[0] = max(0, state.cargo[0] - state.dumper);
     cargoChanged = true;

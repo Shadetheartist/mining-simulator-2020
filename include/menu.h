@@ -74,7 +74,7 @@ const char MENU_BEARINGS_LABEL[] PROGMEM =      "Bearings";
 const char MENU_NITRO_LABEL[] PROGMEM =         "Nitro";
 const char MENU_UPGRADE_DRILL_LABEL[] PROGMEM = "Up Drill";
 const char MENU_DUMPER_LABEL[] PROGMEM =        "Dumper";
-const char MENU_ACCOUNTANT_LABEL[] PROGMEM =    "Accountant";
+const char MENU_ACCOUNTANT_LABEL[] PROGMEM =    "Dealer";
 const char MENU_MANAGER_LABEL[] PROGMEM =       "Manager";
 const char MENU_OPTIONS_LABEL[] PROGMEM =       "Options";
 const char MENU_MUTE_LABEL[] PROGMEM =          "(un)Mute";
@@ -91,9 +91,9 @@ const char MENU_RESTART_INFO[] PROGMEM =              "Restart\n(doesn't\naffect
 
 const char MENU_BUY_INFO[] PROGMEM =                  "Buy and\nupgrade\ntools";
 const char MENU_BUY_DRILL_INFO[] PROGMEM =            "New tool!\nDRILL.";
-const char MENU_BUY_CALCULATOR_INFO[] PROGMEM =       "Sell cargofaster";
+const char MENU_BUY_CALCULATOR_INFO[] PROGMEM =       "Sell cargofaster,\nworks withdealer";
 const char MENU_BUY_CHARM_INFO[] PROGMEM =            "Increases\nluck!";
-const char MENU_BUY_CONVEYOR_BELT_INFO[] PROGMEM =    "Move more\ncargo per\nsale";
+const char MENU_BUY_CONVEYOR_BELT_INFO[] PROGMEM =    "Move more\ncargo.\nworks withhires";
 const char MENU_BUY_CARGO_INFO[] PROGMEM =            "Increase\ncargo\nsize";
 const char MENU_BUY_PICK_INFO[] PROGMEM =             "Increase\nore pickedper use";
 const char MENU_BUY_IDLE_INFO[] PROGMEM =             "Idle speedup";
@@ -101,8 +101,8 @@ const char MENU_BUY_BEARINGS_INFO[] PROGMEM =         "Drill\nstays fastfor long
 const char MENU_BUY_NITRO_INFO[] PROGMEM =            "Redlining\nthe drill\nups yield";
 const char MENU_BUY_BRAIN_STEM_INFO[] PROGMEM =       "Mine\nwithout\nclicking\n(slowly)";
 
-const char MENU_HIRE_ACCOUNTANT_INFO[] PROGMEM =      "Sells\nx of best\ncargo\nper y sec";
-const char MENU_HIRE_DUMPER_INFO[] PROGMEM =          "Delete x\ndirt per ysec";
+const char MENU_HIRE_ACCOUNTANT_INFO[] PROGMEM =      "Auto-sell\nvaluables";
+const char MENU_HIRE_DUMPER_INFO[] PROGMEM =          "Removes\nDirt";
 const char MENU_HIRE_MANAGER_INFO[] PROGMEM =         "Increase\nrate of\nsales\\dump";
 
 const char MENU_OPTIONS_INFO[] PROGMEM =              "Mute &\nSave\\Load";

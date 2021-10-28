@@ -45,7 +45,7 @@ m = f + game_difficulty * d;
 v = round(1 ./ exppdf(x .^late_game_rolloff * m , 1))
 
 # q is the relative value for the rarity
-
+# monitor Q on a log plot to determine late game balance to some degree
 q = [
   r(1, :) .* v;
   r(2, :) .* v;
@@ -53,37 +53,41 @@ q = [
   r(4, :) .* v;
 ];
 
-px = 0 : 1 : 5;
+px = 0 : 1 : 7;
 up_pick = round(2 .^ px);
-up_pick_cost = round(50 * 4 .^ px);
+up_pick_cost = round(200 * 2.5 .^ (px-1).^1.2);
 
-up_drill = round(16 * (1.75 .^ x2));
-up_drill_cost = round(50000  * (3.5 .^ x2));
+up_drill = round(16 * (2 .^ x2));
+up_drill_cost = round(50000  * (2.5 .^ x2));
+
+up_drill_idle = round(500 - 50 * x2);
+up_drill_idle_cost = round(60000  * (1.8 .^ (x2-1)));
 
 up_calc = round(256 ./ (1.75 .^ x2));
 up_calc_cost = round(50 + 50 * (2.75 .^ x2));
 
-up_conv = round((2 .^ x3));
-up_conv_cost = round(100 + 150 * up_conv);
+up_conv = round((1.8 .^ x3));
+up_conv_cost = round(50 + 150 * (2.25 .^ (x3-1)));
 
-up_cgo = round(25 * (1.75 .^ x3));
-up_cgo_cost = round(25 + 25 * (2.25 .^ x3));
+up_cgo = round(25 * (1.9 .^ x3));
+up_cgo_cost = round(25 + 25 * (2.25 .^ (x3-1)));
 
 up_brain = round(1100 - 100 * x2);
 up_brain_cost = round(200 + 300 * 1.9 .^ x2 );
 
-up_dump = round(100 * (1.75 .^ x2));
-up_dump_cost = round(1000 * 2.2 .^ x2 );
+up_dump = round(50 * (1.8 .^ x2));
+up_dump_cost = round(1000 * 3.2 .^ x2 );
 
-up_acc = round(50 * (2.25 .^ x2));
+up_acc = round(16 * (1.7 .^ x2));
 up_acc_cost = round(2000 * 2.8 .^ x2);
 
-up_manager = round(50 * (1.75 .^ x2));
+up_manager = round(5500 - 500 * x2);
 up_manager_cost = round(5000 * 2.2 .^ x2);
 
 move_up = ri .^6 * 50000;
 
-csvwrite('manager_upgrades.csv', [up_acc_cost; up_acc])
+csvwrite('drill_idle_upgrades.csv', [up_drill_idle_cost; up_drill_idle])
+csvwrite('manager_upgrades.csv', [up_manager_cost; up_manager])
 csvwrite('accountant_upgrades.csv', [up_acc_cost; up_acc])
 csvwrite('dumper_upgrades.csv', [up_dump_cost; up_dump])
 csvwrite('brain_upgrades.csv', [up_brain_cost; up_brain])
@@ -98,10 +102,10 @@ csvwrite('values.csv', v)
 
 
 subplot(3, 1, 1)
-plot(x, q)
+plot(x, log(r))
 
 subplot(3, 1, 2)
-plot(x, t)
+plot(x, log(t))
 
 subplot(3, 1, 3)
 plot(x, log(q))

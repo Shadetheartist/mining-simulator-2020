@@ -17,7 +17,7 @@ struct GameState {
   unsigned char drillNitro;
   unsigned char charm;
   unsigned char accountants;
-  unsigned char managers;
+  unsigned int managers;
   unsigned int brain;
   unsigned int dumper;
   unsigned char upgrades[NUM_UPGRADES];
