@@ -57,28 +57,28 @@ px = 0 : 1 : 7;
 up_pick = round(2 .^ px);
 up_pick_cost = round(200 * 2.5 .^ (px-1).^1.2);
 
-up_drill = round(16 * (2 .^ x2));
-up_drill_cost = round(50000  * (2.5 .^ x2));
+up_drill = round(50 * (2 .^ x2));
+up_drill_cost = round(50000  * (3 .^ x2));
 
 up_drill_idle = round(500 - 50 * x2);
 up_drill_idle_cost = round(60000  * (1.8 .^ (x2-1)));
 
-up_calc = round(256 ./ (1.75 .^ x2));
+up_calc = round(256 ./ (2 .^ x2));
 up_calc_cost = round(50 + 50 * (2.75 .^ x2));
 
-up_conv = round((1.8 .^ x3));
+up_conv = round((2 .^ x3));
 up_conv_cost = round(50 + 150 * (2.25 .^ (x3-1)));
 
-up_cgo = round(25 * (1.9 .^ x3));
+up_cgo = round(25 * (2 .^ x3));
 up_cgo_cost = round(25 + 25 * (2.25 .^ (x3-1)));
 
 up_brain = round(1100 - 100 * x2);
 up_brain_cost = round(200 + 300 * 1.9 .^ x2 );
 
-up_dump = round(50 * (1.8 .^ x2));
-up_dump_cost = round(1000 * 3.2 .^ x2 );
+up_dump = round(60 * (4 .^ x2));
+up_dump_cost = round(1000 * 3 .^ x2 );
 
-up_acc = round(16 * (1.7 .^ x2));
+up_acc = round(16 * (2.6 .^ x2));
 up_acc_cost = round(2000 * 2.8 .^ x2);
 
 up_manager = round(5500 - 500 * x2);

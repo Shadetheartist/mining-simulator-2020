@@ -17,7 +17,7 @@ Game::Game()
 
 void initState(Game* game){
   game->state.charm = UP_CHARM_INITIAL_VALUE;
-  game->state.money = 500;
+  game->state.money = 1000;
   game->state.numMinedPerPickUse = UP_PICK_INITIAL_VALUE;
   game->state.currentLocation = 0;
   game->state.maxCargo = UP_CARGO_INITIAL_VALUE;
@@ -90,7 +90,7 @@ void Game::accountantPassive(){
     
     accountantSellMs = millis();
     unsigned int totalSold = 0;
-    unsigned long sellRemaining = state.accountants;
+    unsigned long sellRemaining = state.accountants + state.cargoSoldPerIteration * 4;
     for(unsigned char i = NUM_RESOURCES-1; i > 0; i--){
       
       if(sellRemaining <= 0){
@@ -120,7 +120,8 @@ void Game::accountantPassive(){
 void Game::dumperPassive(){
   if(state.dumper > 0 && state.cargo[0] > 0 && millis() - dumperDumpMs > state.managers){
     dumperDumpMs = millis();
-    state.cargo[0] = max(0, state.cargo[0] - state.dumper);
+    unsigned long amountToDump = state.dumper + state.cargoSoldPerIteration * 10;
+    state.cargo[0] = max(0, state.cargo[0] - amountToDump);
     cargoChanged = true;
     shouldDraw = true;
     gameboard->triggerDumpSound();
@@ -255,7 +256,7 @@ void Game::drill()
       nitro = state.drillNitro;
     }
     
-    char resource = mine(state.numMinedPerDrillUse * nitro);
+    char resource = mine(state.numMinedPerDrillUse * nitro + state.numMinedPerPickUse);
     
     if(digitalRead(PIN_TRIGGER) == LOW){
       drillTemp += drillTempIncrase;
@@ -271,23 +272,13 @@ void Game::drill()
     
     drillPassive();
 
-    if(resource == -1){
-      gameboard->triggerBadSound();
-      delay(50);
-    }
-
-    //if we dug stuff that was totally filtered out then just use the poo sound
-    if(resource == -2){
-      resource = 0;
-    }
-
     if(resource >= 0){
       gameboard->triggerDrillSound(resource);
     }
 
     interface->draw();
-
-    unsigned long waitMillis = millis() + (state.drillIdle - (heatPercentage * state.drillIdle));
+    unsigned long totalIdle = state.drillIdle + state.brain / 10;
+    unsigned long waitMillis = millis() + (totalIdle - (heatPercentage * totalIdle));
     while(millis() < waitMillis){
       gameboard->boostBtn.update();
       if(gameboard->boostBtn.rose()){
@@ -558,9 +549,7 @@ void Game::update()
   
   if(state.upgrades[UP_DRILL] > 0){
     drillIdleSound();
-  }
-
-  if(state.brain != 0){
+  } else if(state.brain != 0){
     if(digitalRead(PIN_TRIGGER) && digitalRead(PIN_BOOST) && millis() - lastBrainPickMs > state.brain && getCargoPercentage() < 100){
       lastBrainPickMs = millis();
 
