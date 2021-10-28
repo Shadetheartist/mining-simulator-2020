@@ -15,10 +15,11 @@ struct GameState {
   unsigned int drillIdle;
   unsigned char drillTempDecrease;
   unsigned char drillNitro;
-  unsigned char filter;
+  unsigned char charm;
   unsigned char accountants;
   unsigned char managers;
   unsigned int brain;
+  unsigned int dumper;
   unsigned char upgrades[NUM_UPGRADES];
   
   float maxCargo;
@@ -48,6 +49,7 @@ class Game {
         bool cargoChanged;
         unsigned long lastCargoPercentage;
         
+        unsigned long dumperDumpMs;
         unsigned long accountantSellMs;
         unsigned long lastBrainPickMs;
         unsigned long lastDrillIdleUs;
@@ -69,6 +71,7 @@ class Game {
         void drillPassive();
         void drillIdleSound();
         void accountantPassive();
+        void dumperPassive();
 
         char getRandomResource();
         char mine(unsigned long amount);

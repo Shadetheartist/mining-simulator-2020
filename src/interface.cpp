@@ -229,7 +229,10 @@ void Interface::drawInfoSidebar()
 
     if (currentVal == nextVal)
     {
-      display->print(F("MAXED"));
+      char buffer[8];
+      abbreviateNumber(currentVal, buffer, 1);
+      display->print(buffer);
+      display->print(F(">MAXED"));
     }
     else
     {
@@ -243,9 +246,9 @@ void Interface::drawInfoSidebar()
 
       abbreviateNumber(currentVal, buffer, 0);
       display->print(buffer);
-      display->print(F(" > "));
+      display->print(F(" >"));
 
-      abbreviateNumber(nextVal, buffer, 0);
+      abbreviateNumber(nextVal, buffer, 1);
       display->print(buffer);
     }
   }
@@ -358,11 +361,6 @@ void Interface::drawLandscape()
       bmp = G_BACKGROUND_4;
       width = G_BACKGROUND_4_WIDTH;
       height = G_BACKGROUND_4_HEIGHT;
-      break;
-    case 4:
-      bmp = G_BACKGROUND_5;
-      width = G_BACKGROUND_5_WIDTH;
-      height = G_BACKGROUND_5_HEIGHT;
       break;
   }
 

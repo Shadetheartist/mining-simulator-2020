@@ -22,8 +22,8 @@ int getUpgradeFromMenuItem(unsigned char menuItem){
     case MENU_BUY_OPT_CONVEYOR_BELT:
       up = UP_CONVEYOR_BELT;
       break;
-    case MENU_BUY2_OPT_FILTER:
-      up = UP_FILTER;
+    case MENU_BUY2_OPT_CHARM:
+      up = UP_CHARM;
       break;
     case MENU_UPGRADE_DRILL_OPT_IDLE:
       up = UP_DRILL_IDLE;
@@ -37,16 +37,19 @@ int getUpgradeFromMenuItem(unsigned char menuItem){
     case MENU_MAIN_OPT_MOVE:
       up = UP_MOVE;
       break;
+    case MENU_HIRE_OPT_DUMPER:
+      up = UP_DUMPER;
+      break;
     case MENU_HIRE_OPT_ACCOUNTANT:
       up = UP_ACCOUNTANT;
       break;
     case MENU_HIRE_OPT_MANAGER:
       up = UP_MANAGER;
       break;
-
     case MENU_BUY_OPT_BRAIN_STEM:
       up = UP_BRAIN;
       break;
+
   }
 
   return up;
@@ -66,9 +69,9 @@ void upgradeCalculator(Game *game, const unsigned long val)
   game->state.cargoSellDelay = val;
 }
 
-void upgradeDirtFilter(Game *game, const unsigned long val) 
+void upgradeCharm(Game *game, const unsigned long val) 
 {
-  game->state.filter = val;
+  game->state.charm = val;
 }
 
 void upgradeConveyorBelt(Game *game, const unsigned long val) 
@@ -107,6 +110,10 @@ void upgradeManager(Game* game, const unsigned long val){
 
 void upgradeBrain(Game* game, const unsigned long val){
   game->state.brain = val;
+}
+
+void upgradeDumper(Game* game, const unsigned long val){
+  game->state.dumper = val;
 }
 
 unsigned char getNumUpgrades(unsigned char up){

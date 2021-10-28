@@ -60,6 +60,18 @@ void Gameboard::triggerMeepSound(){
   }
 }
 
+void Gameboard::triggerDumpSound(){
+  if(mute){ return; }
+
+  for(int i = 0; i < 2; i++){
+    playTone(1200);
+  }
+  
+  for(int i = 0; i < 4; i++){
+    playTone(2400);
+  }
+}
+
 void Gameboard::triggerPickSound(char resource){
   if(mute){ return; }
   if(resource == -1){ return; }

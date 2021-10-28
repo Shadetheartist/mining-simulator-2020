@@ -36,6 +36,7 @@ class Gameboard {
         void triggerMoneySound();
         void triggerSpendSound();
         void triggerMeepSound();
+        void triggerDumpSound();
         void setRedLED(const uint8_t val);
         void setUpperGreenLED(const uint8_t val);
         void setLowerGreenLED(const uint8_t val);

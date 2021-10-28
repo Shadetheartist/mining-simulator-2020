@@ -2,7 +2,7 @@
 #define RESOURCES_H
 
 #include <Arduino.h>
-#define NUM_LOCATIONS 5
+#define NUM_LOCATIONS 4
 #define NUM_RESOURCES 10
 
 const char RESOURCE_0_NAME[] PROGMEM = {0x1e, ' ', 0};
@@ -14,7 +14,7 @@ const char RESOURCE_5_NAME[] PROGMEM = "Pt";
 const char RESOURCE_6_NAME[] PROGMEM = {0x7, 'E', 0};
 const char RESOURCE_7_NAME[] PROGMEM = {0x7, 'R', 0};
 const char RESOURCE_8_NAME[] PROGMEM = {0x7, 'D', 0};
-const char RESOURCE_9_NAME[] PROGMEM = {0x7, 'J', 0};
+const char RESOURCE_9_NAME[] PROGMEM = {0x7, 'G', 0};
 
 const char *const RESOURCE_NAMES[] PROGMEM = {
     RESOURCE_0_NAME,
@@ -29,18 +29,15 @@ const char *const RESOURCE_NAMES[] PROGMEM = {
     RESOURCE_9_NAME,
 };
 
-const unsigned long RESOURCE_VALUES [NUM_RESOURCES] PROGMEM = {
-    1, 2, 4, 8, 16, 32, 64, 128, 256, 512
-};
 
-#define BASE 1000000
+//calculated for balance using gnu octave from files in the gnu_octave folder
+const unsigned long RESOURCE_VALUES[NUM_RESOURCES] PROGMEM = { 1,4,20,90,403,1808,8103,36316,162755,729416 };
 
-const unsigned long LOCATION_RESOURCE_RARITIES [NUM_LOCATIONS][NUM_RESOURCES] PROGMEM = {
-    { 750000, 200000, 42000, 6976, 919, 96, 8, 1, 0, 0 },
-    { 250000, 500000, 200000, 42000, 6976, 919, 96, 8, 1, 0},
-    { 125000, 125000, 500000, 200000, 42000, 6976, 919, 96, 8, 1},
-    { 62500, 62500, 125000, 500000, 200000, 42000, 6976, 919, 96, 17},
-    { 31250, 31250, 62500, 125000, 500000, 200000, 42000, 6976, 919, 105},
+const unsigned long LOCATION_RESOURCE_RARITIES[NUM_LOCATIONS][NUM_RESOURCES] PROGMEM = {
+    {834701,137975,22807,3770,623,103,17,3,0,0},
+    {776870,173343,38678,8630,1926,430,96,21,5,1},
+    {698810,210478,63395,19094,5751,1732,522,157,47,14},
+    {593504,241301,98105,39887,16217,6593,2681,1090,443,180},
 };
 
 #endif

@@ -16,8 +16,8 @@ Game::Game()
 }
 
 void initState(Game* game){
-  game->state.filter = UP_FILTER_INITIAL_VALUE;
-  game->state.money = 0;
+  game->state.charm = UP_CHARM_INITIAL_VALUE;
+  game->state.money = 100000000;
   game->state.numMinedPerPickUse = UP_PICK_INITIAL_VALUE;
   game->state.currentLocation = 0;
   game->state.maxCargo = UP_CARGO_INITIAL_VALUE;
@@ -29,7 +29,8 @@ void initState(Game* game){
   game->state.accountants = 0;
   game->state.managers = UP_MANAGER_INITIAL_VALUE;
   game->state.numMinedPerDrillUse = UP_DRILL_INITIAL_VALUE;
-  game->state.brain = 0;
+  game->state.brain = UP_BRAIN_INITIAL_VALUE;
+  game->state.dumper = UP_DUMPER_INITIAL_VALUE;
 
   for(int i = 0; i < NUM_RESOURCES; i++)
   {
@@ -57,6 +58,7 @@ void initDynamics(Game* game){
   game->cargoChanged = true;
   game->lastCargoPercentage = 0;
   game->accountantSellMs = 0;
+  game->dumperDumpMs = 0;
 
   game->gameboard->setBlueLED(LOW);
   game->gameboard->setLowerGreenLED(LOW);
@@ -88,7 +90,7 @@ void Game::accountantPassive(){
     accountantSellMs = millis();
     unsigned int totalSold = 0;
     unsigned long sellRemaining = state.accountants;
-    for(unsigned char i = 0; i < NUM_RESOURCES; i++){
+    for(unsigned char i = NUM_RESOURCES-1; i > 0; i--){
       
       if(sellRemaining <= 0){
         break;
@@ -98,8 +100,7 @@ void Game::accountantPassive(){
       unsigned long numSold = min(state.cargo[i], sellRemaining);
       unsigned long value = resourceValue * numSold;
       sellRemaining -= numSold;
-
-      cargoChanged = true;
+     
       state.cargo[i] -= numSold;
 
       totalSold += value;
@@ -109,7 +110,19 @@ void Game::accountantPassive(){
 
     if(totalSold > 0){
       gameboard->triggerMoneySound();
+      cargoChanged = true;
     }
+  }
+}
+
+
+void Game::dumperPassive(){
+  if(state.dumper > 0 && state.cargo[0] > 0 && millis() - dumperDumpMs > state.managers * 1000){
+    dumperDumpMs = millis();
+    state.cargo[0] = max(0, state.cargo[0] - state.dumper);
+    cargoChanged = true;
+    shouldDraw = true;
+    gameboard->triggerDumpSound();
   }
 }
 
@@ -137,7 +150,18 @@ void Game::drillPassive(){
 
 
 char Game::getRandomResource(){
+
   unsigned long r = random(0, 1000000);
+  
+  // charms grant additional tries for a better result
+  for(char i = 0; i < state.charm; i++){
+    unsigned long charm_r = random(0, 1000000);
+
+    if(charm_r > r){
+      r = charm_r;
+    }
+  }
+
   unsigned long c = 0;
 
   for (int i = 0; i < NUM_RESOURCES; i++)
@@ -192,11 +216,6 @@ char Game::mine(unsigned long amount)
   
   unsigned char resource = getRandomResource();
 
-  if(resource < state.filter){
-    resource = min(NUM_RESOURCES-1, resource + 1);
-    amount /= 2;
-  }
-
   state.cargo[resource] += min(remainingSpace, amount);
   cargoChanged = true;
 
@@ -205,33 +224,15 @@ char Game::mine(unsigned long amount)
 
 void Game::pick()
 {
-  char bestResource = -2;
-
-  for(unsigned int n = 0; n < state.numMinedPerPickUse; n++){
-    char resource = mine(1);
+  char resource = mine(state.numMinedPerPickUse);
    
-    if(resource > bestResource){
-      bestResource = resource;
-    }
-
-    if(resource == -1){
-      break;
-    }
-  }
-
-  if(bestResource == -1){
+  if(resource >= 0){
+    gameboard->triggerPickSound(resource);
+    return;
+  } else if(resource == -1){
     gameboard->triggerBadSound();
+    return;
   }
-
-  //if we dug stuff that was totally filtered out then just use the poo sound
-  if(bestResource == -2){
-    bestResource = 0;
-  }
-
-  if(bestResource >= 0){
-    gameboard->triggerPickSound(bestResource);
-  }
-  
 }
 
 void Game::drill()
@@ -239,6 +240,7 @@ void Game::drill()
   while(!digitalRead(PIN_BOOST))
   {
     accountantPassive();
+    dumperPassive();
 
     drillFrame++;
     if(drillFrame > 2){
@@ -488,13 +490,14 @@ void Game::menuUpdate()
     case MENU_BUY_OPT_CARGO:
     case MENU_BUY_OPT_CONVEYOR_BELT:
     case MENU_BUY2_OPT_DRILL:
-    case MENU_BUY2_OPT_FILTER:
+    case MENU_BUY2_OPT_CHARM:
     case MENU_UPGRADE_DRILL_OPT_IDLE:
     case MENU_UPGRADE_DRILL_OPT_BEARINGS:
     case MENU_UPGRADE_DRILL_OPT_NITRO:
     case MENU_MAIN_OPT_MOVE:
     case MENU_HIRE_OPT_ACCOUNTANT:
     case MENU_HIRE_OPT_MANAGER:
+    case MENU_HIRE_OPT_DUMPER:
     case MENU_BUY_OPT_BRAIN_STEM:
       char up = getUpgradeFromMenuItem(menuSelectedPage + menuSelectedOption);
       upgrade(up);
@@ -550,6 +553,7 @@ void Game::update()
 {
   drillPassive();
   accountantPassive();
+  dumperPassive();
   
   if(state.upgrades[UP_DRILL] > 0){
     drillIdleSound();

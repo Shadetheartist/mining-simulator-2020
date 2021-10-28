@@ -18,5 +18,3 @@ for i in range(0, numRarities):
   
 
 print(rarities, sum(rarities))
-
-print(sum([ 62500, 62500, 125000, 500000, 200000, 42000, 6976, 919, 96, 17 ]))
